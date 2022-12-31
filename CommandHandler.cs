@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 
 namespace AstolfoBot
 {
@@ -89,7 +90,18 @@ namespace AstolfoBot
                         await context.Interaction.RespondAsync("Invalid number or arguments");
                         break;
                     case InteractionCommandError.Exception:
-                        await context.Interaction.RespondAsync($"Command exception: {result.ErrorReason}");
+                        var admins = JsonConvert.DeserializeObject<ulong[]>(File.ReadAllText("botadmins.json")) ?? new ulong[0];
+                        var testers = JsonConvert.DeserializeObject<ulong[]>(File.ReadAllText("testers.json")) ?? new ulong[0];
+                        if (admins.Contains(context.User.Id) || testers.Contains(context.User.Id))
+                        {
+                            await context.Interaction.RespondAsync(
+                                $"Command exception: {result.ErrorReason}\nHeres the entire thing cause youre a tester\n" +
+                                $"```json\n{JsonConvert.SerializeObject(result, Formatting.Indented)}\n```");
+                        }
+                        else
+                        {
+                            await context.Interaction.RespondAsync($"Command exception: {result.ErrorReason}");
+                        }
                         break;
                     case InteractionCommandError.Unsuccessful:
                         await context.Interaction.RespondAsync("Command could not be executed");

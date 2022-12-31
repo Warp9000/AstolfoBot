@@ -31,4 +31,8 @@
 
     ❌ Reaction roles
 
+    ❌ Counting
+
+    ➖ Tickets
+
 <!-- ❌➖✔️ -->

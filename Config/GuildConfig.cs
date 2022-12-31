@@ -6,27 +6,13 @@ namespace AstolfoBot.Config
 {
     public struct GuildConfig
     {
-        [JsonConverter(typeof(DiscordChannelConverter))]
+        [JsonConverter(typeof(Converters.DiscordChannelConverter))]
         public ITextChannel? LogChannel { get; set; }
-    }
-    public class DiscordChannelConverter : JsonConverter
-    {
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(ITextChannel);
-        }
-
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-        {
-            return Main.Client.GetChannel(Convert.ToUInt64(reader.Value)) as ITextChannel;
-        }
-
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-        {
-            if (value is ITextChannel channel)
-            {
-                writer.WriteValue(channel.Id);
-            }
-        }
+        [JsonConverter(typeof(Converters.TicketsConverter))]
+        public List<Modules.Tickets.Ticket> Tickets { get; set; }
+        [JsonConverter(typeof(Converters.DiscordCategoryConverter))]
+        public ICategoryChannel? OpenTicketCategory { get; set; }
+        [JsonConverter(typeof(Converters.DiscordCategoryConverter))]
+        public ICategoryChannel? ClosedTicketCategory { get; set; }
     }
 }
