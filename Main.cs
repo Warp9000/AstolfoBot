@@ -41,6 +41,7 @@ namespace AstolfoBot
 
             Client.Ready += () =>
             {
+                Config.ConfigManager.LoadFromFile();
                 Logger.Debug("Client ready", this);
                 return Task.CompletedTask;
             };
