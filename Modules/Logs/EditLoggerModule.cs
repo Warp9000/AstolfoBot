@@ -14,7 +14,16 @@ namespace AstolfoBot.Modules.Logs
         }
         public Task OnMessageUpdated(Cacheable<IMessage, ulong> message, SocketMessage newMessage, ISocketMessageChannel channel)
         {
-            var cfg = Context.Guild.GetConfig();
+            GuildConfig cfg = new();
+            if(channel is IGuildChannel guildChannel)
+            {
+                cfg = guildChannel.Guild.GetConfig();  
+            }
+            else
+            {
+                Logger.Debug("Channel is null", this);
+                return Task.CompletedTask;
+            }
             if (cfg.LogChannel is null)
             {
                 Logger.Debug("LogChannel is null", this);

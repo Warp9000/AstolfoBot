@@ -1,6 +1,8 @@
 using Discord;
+using Discord.WebSocket;
 using Discord.Interactions;
 using AstolfoBot.Config;
+using Newtonsoft.Json;
 
 namespace AstolfoBot.Modules.Logs
 {
@@ -14,28 +16,52 @@ namespace AstolfoBot.Modules.Logs
         }
         public async Task OnMessageDeleted(Cacheable<IMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
         {
-            var cfg = Context.Guild.GetConfig();
-            if (cfg.LogChannel is null)
+            try
             {
-                Logger.Debug("LogChannel is null", this);
-                return;
+                GuildConfig cfg = new();
+                if(channel.HasValue && channel.Value is IGuildChannel guildChannel)
+                {
+                    cfg = guildChannel.Guild.GetConfig();  
+                }
+                else
+                {
+                    Logger.Debug("Channel is null", this);
+                    return;
+                }
+                if (cfg.LogChannel is null)
+                {
+                    Logger.Debug("LogChannel is null", this);
+                    return;
+                }
+                if (message.HasValue)
+                {
+                    var embed = new EmbedBuilder()
+                        .WithTitle("Message deleted")
+                        .WithAuthor(message.Value.Author)
+                        .WithDescription(message.Value.Content)
+                        .WithColor(Color.Red)
+                        .WithCurrentTimestamp()
+                        .Build();
+                    await cfg.LogChannel.SendMessageAsync(embed: embed);
+                }
             }
-            if (message.HasValue)
+            catch (Exception ex)
             {
-                var embed = new EmbedBuilder()
-                    .WithTitle("Message deleted")
-                    .WithAuthor(message.Value.Author)
-                    .WithDescription(message.Value.Content)
-                    .WithColor(Color.Red)
-                    .WithCurrentTimestamp()
-                    .Build();
-                await cfg.LogChannel.SendMessageAsync(embed: embed);
+                Logger.Critical(ex.Message, this, ex);
             }
-            return;
         }
         public async Task OnMessagesBulkDeleted(IReadOnlyCollection<Cacheable<IMessage, ulong>> messages, Cacheable<IMessageChannel, ulong> channel)
         {
-            var cfg = Context.Guild.GetConfig();
+            GuildConfig cfg = new();
+            if(channel.HasValue && channel.Value is IGuildChannel guildChannel)
+            {
+                cfg = guildChannel.Guild.GetConfig();
+            }
+            else
+            {
+                Logger.Debug("Channel is null", this);
+                return;
+            }
             if (cfg.LogChannel is null)
             {
                 Logger.Debug("LogChannel is null", this);
