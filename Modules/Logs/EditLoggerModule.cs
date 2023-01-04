@@ -14,10 +14,10 @@ namespace AstolfoBot.Modules.Logs
         }
         public Task OnMessageUpdated(Cacheable<IMessage, ulong> message, SocketMessage newMessage, ISocketMessageChannel channel)
         {
-            GuildConfig cfg = new();
-            if(channel is IGuildChannel guildChannel)
+            GuildConfig cfg;
+            if (channel is IGuildChannel guildChannel)
             {
-                cfg = guildChannel.Guild.GetConfig();  
+                cfg = guildChannel.Guild.GetConfig();
             }
             else
             {

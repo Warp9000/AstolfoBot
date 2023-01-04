@@ -5,7 +5,7 @@ using Discord.Interactions;
 namespace AstolfoBot.Modules.Embeds
 {
     [RequireUserPermission(GuildPermission.ManageMessages)]
-    public class EmbedsModule : InteractionModuleBase<SocketInteractionContext>
+    public partial class EmbedsModule : InteractionModuleBase<SocketInteractionContext>
     {
         [SlashCommand("fastembed", "Sends an embed")]
         public async Task FastEmbedCommand(
@@ -51,7 +51,7 @@ namespace AstolfoBot.Modules.Embeds
                 if (colorhex != null)
                 {
                     // regex that only matches a 6 digit hex color code
-                    if (Regex.IsMatch(colorhex, @"^#([A-Fa-f0-9]{6})$"))
+                    if (HexColorRegex().IsMatch(colorhex))
                     {
                         colorhex = colorhex.TrimStart('#');
                         uint colorint = uint.Parse(colorhex, System.Globalization.NumberStyles.HexNumber);
@@ -97,11 +97,11 @@ namespace AstolfoBot.Modules.Embeds
             catch (Exception e)
             {
                 Logger.Error("An error occurred while sending an embed", this, e);
-                await RespondAsync($"An error occurred");
+                await RespondAsync("An error occurred");
             }
         }
         [Group("embed", "Sends an embed")]
-        public class EasyEmbedModule : InteractionModuleBase<SocketInteractionContext>
+        public partial class EasyEmbedModule : InteractionModuleBase<SocketInteractionContext>
         {
             static Dictionary<ulong, EasyEmbed> EasyEmbeds { get; set; } = new Dictionary<ulong, EasyEmbed>();
             [SlashCommand("start", "Starts an embed")]
@@ -127,7 +127,7 @@ namespace AstolfoBot.Modules.Embeds
                 catch (Exception e)
                 {
                     Logger.Error("An error occurred while starting an embed", this, e);
-                    await RespondAsync($"An error occurred");
+                    await RespondAsync("An error occurred");
                 }
             }
             [SlashCommand("stop", "Stops an embed")]
@@ -135,27 +135,26 @@ namespace AstolfoBot.Modules.Embeds
             {
                 try
                 {
-                    if (EasyEmbeds.ContainsKey(Context.User.Id))
+                    if (!EasyEmbeds.Remove(Context.User.Id))
                     {
-                        EasyEmbeds.Remove(Context.User.Id);
-                        await RespondAsync("Embed stopped");
+                        await RespondAsync("You don't have an embed started");
                     }
                     else
                     {
-                        await RespondAsync("You don't have an embed started");
+                        await RespondAsync("Embed stopped");
                     }
                 }
                 catch (Exception e)
                 {
                     Logger.Error("An error occurred while stopping an embed", this, e);
-                    await RespondAsync($"An error occurred");
+                    await RespondAsync("An error occurred");
                 }
             }
-            [SlashCommand("select", "Selects an alreadt sent embed")]
-            public async Task Select([Summary("message", "The message id of the embed")] ulong? messageid = null)
-            {
-                await RespondAsync("Not implemented yet due to security concerns");
-            }
+            // [SlashCommand("select", "Selects an alreadt sent embed")]
+            // public async Task Select([Summary("message", "The message id of the embed")] ulong? messageid = null)
+            // {
+            //     await RespondAsync("Not implemented yet due to security concerns");
+            // }
 
             [SlashCommand("title", "Sets the title of the embed")]
             public async Task Title([Summary("title", "The title of the embed")] string? title = null)
@@ -220,7 +219,7 @@ namespace AstolfoBot.Modules.Embeds
                 {
                     if (colorhex != null)
                     {
-                        if (Regex.IsMatch(colorhex, @"^#([A-Fa-f0-9]{6})$"))
+                        if (HexColorRegex().IsMatch(colorhex))
                         {
                             colorhex = colorhex.TrimStart('#');
                             uint colorint = uint.Parse(colorhex, System.Globalization.NumberStyles.HexNumber);
@@ -438,10 +437,7 @@ namespace AstolfoBot.Modules.Embeds
             {
                 if (EasyEmbeds.TryGetValue(Context.User.Id, out var easyEmbed))
                 {
-                    if (channel == null)
-                    {
-                        channel = (ITextChannel)Context.Channel;
-                    }
+                    channel ??= (ITextChannel)Context.Channel;
                     await channel.SendMessageAsync(embed: easyEmbed.Embed.Build());
                     await RespondAsync("Embed sent");
                     EasyEmbeds.Remove(Context.User.Id);
@@ -451,6 +447,9 @@ namespace AstolfoBot.Modules.Embeds
                     await RespondAsync("No embed started");
                 }
             }
+
+            [GeneratedRegex("^#([A-Fa-f0-9]{6})$")]
+            private static partial Regex HexColorRegex();
         }
 
         public struct EasyEmbed
@@ -463,5 +462,8 @@ namespace AstolfoBot.Modules.Embeds
             public IUserMessage Message { get; set; }
             public EmbedBuilder Embed { get; set; }
         }
+
+        [GeneratedRegex("^#([A-Fa-f0-9]{6})$")]
+        private static partial Regex HexColorRegex();
     }
 }

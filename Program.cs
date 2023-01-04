@@ -1,8 +1,8 @@
 namespace AstolfoBot
 {
-    public class Program
+    public static class Program
     {
-        public static Task Main(string[] args)
+        public static Task Main()
         {
             return new Main().AsyncMain();
         }

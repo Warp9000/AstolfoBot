@@ -21,7 +21,7 @@ namespace AstolfoBot.Modules.Logs
                 GuildConfig cfg = new();
                 if(channel.HasValue && channel.Value is IGuildChannel guildChannel)
                 {
-                    cfg = guildChannel.Guild.GetConfig();  
+                    cfg = guildChannel.Guild.GetConfig();
                 }
                 else
                 {
@@ -91,7 +91,7 @@ namespace AstolfoBot.Modules.Logs
                     if (message.HasValue)
                     {
                         messageContent += message.Value.Timestamp.ToString("yyyy-MM-dd HH:mm:ss") + " | " +
-                        $"{authors.First().Username}#{authors.First().Discriminator} ({authors.First().Id}): " +
+                        $"{authors[0].Username}#{authors[0].Discriminator} ({authors[0].Id}): " +
                         message.Value.Content + "\n";
                     }
                 }
@@ -100,8 +100,8 @@ namespace AstolfoBot.Modules.Logs
                     .WithTitle("Bulk delete")
                     .WithAuthor(new EmbedAuthorBuilder()
                         .WithName(multipleAuthors ? "Multiple authors" :
-                        $"{authors.First().Username}#{authors.First().Discriminator} ({authors.First().Id})")
-                        .WithIconUrl(multipleAuthors ? null : authors.First().GetAvatarUrl()))
+                        $"{authors[0].Username}#{authors[0].Discriminator} ({authors[0].Id})")
+                        .WithIconUrl(multipleAuthors ? null : authors[0].GetAvatarUrl()))
                     .WithColor(Color.Red)
                     .WithCurrentTimestamp()
                     .Build();

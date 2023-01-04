@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace AstolfoBot.Config
 {
-    public class ConfigManager
+    public static class ConfigManager
     {
         public static Dictionary<ulong, GuildConfig> GuildConfig
         { get; set;
@@ -12,8 +12,7 @@ namespace AstolfoBot.Config
         {
             if (GuildConfig != null)
             {
-                GuildConfig cfg;
-                if (GuildConfig.TryGetValue(guildId, out cfg))
+                if (GuildConfig.TryGetValue(guildId, out GuildConfig cfg))
                 {
                     return cfg;
                 }
@@ -43,14 +42,7 @@ namespace AstolfoBot.Config
 
         public static void SaveGuildConfig(ulong guildId, GuildConfig config)
         {
-            if (GuildConfig.ContainsKey(guildId))
-            {
-                GuildConfig[guildId] = config;
-            }
-            else
-            {
-                GuildConfig.Add (guildId, config);
-            }
+            GuildConfig[guildId] = config;
         }
 
         public static void SaveToFile()

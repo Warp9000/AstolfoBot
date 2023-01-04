@@ -59,14 +59,10 @@ namespace AstolfoBot.Modules.Tests
             }
         }
         [SlashCommand("exception", "it just throws an exception")]
-        public async Task ExceptionCommand()
+        public static async Task ExceptionCommand()
         {
             await Task.Delay(0);
             throw new Exception("This is an exception");
-        }
-        private bool IsOwner()
-        {
-            return Context.User.Id == 408615875252322305;
         }
     }
 }

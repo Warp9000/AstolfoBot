@@ -42,7 +42,7 @@ namespace AstolfoBot.Modules.Tickets
                     CustomId = "create_ticket",
                     Emote = new Emoji("📩")
                 };
-                var message = await channel.SendMessageAsync(embed: embed, components: new ComponentBuilder().WithButton(button).Build());
+                await channel.SendMessageAsync(embed: embed, components: new ComponentBuilder().WithButton(button).Build());
                 await RespondAsync("Created ticket embed in " + channel.Name, ephemeral: true);
             }
 

@@ -5,7 +5,7 @@ using AstolfoBot.Config;
 
 namespace AstolfoBot.Modules.Tickets
 {
-    public class Tickets
+    public static class Tickets
     {
         public static async Task<ITextChannel> CreateTicket(IUser user, SocketGuild guild, string reason)
         {
@@ -15,7 +15,7 @@ namespace AstolfoBot.Modules.Tickets
             {
                 throw new Exception("Ticket category is not set");
             }
-            var ticketChannel = await guild.CreateTextChannelAsync($"ticket-{((cfg.Tickets?.Count ?? 0) + 1).ToString("D3")}", x =>
+            var ticketChannel = await guild.CreateTextChannelAsync($"ticket-{(cfg.Tickets?.Count ?? 0) + 1:D3}", x =>
             {
                 x.CategoryId = ticketCategory.Id;
                 x.Topic =
@@ -24,11 +24,7 @@ namespace AstolfoBot.Modules.Tickets
                 $"{TimestampTag.FromDateTimeOffset(DateTimeOffset.Now, TimestampTagStyles.LongDateTime)}";
             });
             var ticket = new Ticket(ticketChannel, user, (uint)(cfg.Tickets?.Count ?? 0) + 1);
-            if (cfg.Tickets is null)
-            {
-                cfg.Tickets = new List<Ticket>();
-            }
-            cfg.Tickets.Add(ticket);
+            (cfg.Tickets ??= new List<Ticket>()).Add(ticket);
             await ticketChannel.SyncPermissionsAsync();
             await ticketChannel.AddPermissionOverwriteAsync(guild.EveryoneRole, new OverwritePermissions(viewChannel: PermValue.Deny));
             await ticketChannel.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow));
@@ -43,7 +39,7 @@ namespace AstolfoBot.Modules.Tickets
             {
                 throw new Exception("Ticket does not exist");
             }
-            var ticket = cfg.Tickets.FirstOrDefault(x => x.Id == ticketId);
+            var ticket = cfg.Tickets.Find(x => x.Id == ticketId);
             cfg.Tickets.RemoveAll(x => x.Id == ticketId);
             ticket.IsOpen = false;
             cfg.Tickets.Add(ticket);
@@ -65,7 +61,7 @@ namespace AstolfoBot.Modules.Tickets
             {
                 throw new Exception("Ticket does not exist");
             }
-            var ticket = cfg.Tickets.FirstOrDefault(x => x.Id == ticketId);
+            var ticket = cfg.Tickets.Find(x => x.Id == ticketId);
             var ticketChannel = ticket.Channel;
             await ticketChannel.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow));
             cfg.SaveConfig(guild);

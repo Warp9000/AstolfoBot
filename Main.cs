@@ -4,14 +4,11 @@ using Newtonsoft.Json;
 
 namespace AstolfoBot
 {
-    public class Main
+    public sealed class Main
     {
-        public static DiscordSocketClient Client = new();
-        public DiscordSocketConfig? ClientConfig;
-        private string Token = "TOKEN";
-        public async Task AsyncMain()
+        static Main()
         {
-            ClientConfig = new DiscordSocketConfig
+            var ClientConfig = new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Debug,
                 MessageCacheSize = 1000,
@@ -19,6 +16,12 @@ namespace AstolfoBot
                 GatewayIntents = GatewayIntents.All
             };
             Client = new DiscordSocketClient(ClientConfig);
+        }
+        public readonly static DiscordSocketClient Client;
+        // public DiscordSocketConfig? ClientConfig;
+        private string Token = "TOKEN";
+        public async Task AsyncMain()
+        {
             Client.Log += Logger.Log;
 
             if (!Directory.Exists("Logs"))
