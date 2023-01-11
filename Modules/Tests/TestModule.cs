@@ -60,7 +60,7 @@ namespace AstolfoBot.Modules.Tests
         }
         [SlashCommand("exception", "it just throws an exception")]
         [Tests.RequireTester]
-        public async Task ExceptionCommand()
+        public static async Task ExceptionCommand()
         {
             await Task.Delay(0);
             throw new Exception("This is an exception");

@@ -6,9 +6,9 @@ using AstolfoBot.Config;
 
 namespace AstolfoBot.Modules.InviteTracker
 {
-    public class InviteTrackerModule : InteractionModuleBase<SocketInteractionContext>
+    public sealed class InviteTrackerModule : InteractionModuleBase<SocketInteractionContext>
     {
-        static Dictionary<ulong, IInviteMetadata[]> Invites = new Dictionary<ulong, IInviteMetadata[]>();
+        static readonly Dictionary<ulong, IInviteMetadata[]> Invites = new();
         InviteTrackerModule()
         {
             Main.Client.Ready += () =>
@@ -39,7 +39,6 @@ namespace AstolfoBot.Modules.InviteTracker
                 File.WriteAllText("invites.json", JsonConvert.SerializeObject(invites, Formatting.Indented));
                 await RespondWithFileAsync("invites.json");
                 File.Delete("invites.json");
-
             }
             catch (Exception e)
             {
@@ -61,7 +60,7 @@ namespace AstolfoBot.Modules.InviteTracker
             }
             Invites[socketGuildUser.Guild.Id] = newInvites.ToArray();
         }
-        public async Task OnInviteCreated(SocketInvite socketInvite)
+        public static async Task OnInviteCreated(SocketInvite socketInvite)
         {
             var invites = await socketInvite.Guild.GetInvitesAsync();
             Invites[socketInvite.Guild.Id] = invites.ToArray();

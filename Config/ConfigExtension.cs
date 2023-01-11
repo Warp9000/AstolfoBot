@@ -5,8 +5,13 @@ namespace AstolfoBot.Config
 {
     public static class ConfigExtension
     {
-        public static GuildConfig GetConfig(this SocketGuild guild) => ConfigManager.GetGuildConfig(guild.Id);
-        public static void SaveConfig(this SocketGuild guild, GuildConfig config) => ConfigManager.SaveGuildConfig(guild.Id, config);
-        public static void SaveConfig(this GuildConfig config, SocketGuild guild) => ConfigManager.SaveGuildConfig(guild.Id, config);
+        public static GuildConfig GetConfig(this IGuild guild) =>
+            ConfigManager.GetGuildConfig(guild.Id);
+
+        public static void SaveConfig(this IGuild guild, GuildConfig config) =>
+            ConfigManager.SaveGuildConfig(guild.Id, config);
+
+        public static void SaveConfig(this GuildConfig config, IGuild guild) =>
+            ConfigManager.SaveGuildConfig(guild.Id, config);
     }
 }

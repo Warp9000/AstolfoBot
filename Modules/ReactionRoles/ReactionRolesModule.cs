@@ -6,19 +6,18 @@ using Newtonsoft.Json;
 namespace AstolfoBot.Modules.ReactionRoles
 {
     [Group("reaction-roles", "Commands for managing reaction roles")]
-    public class ReactionRolesModule : InteractionModuleBase<SocketInteractionContext>
+    public sealed class ReactionRolesModule : InteractionModuleBase<SocketInteractionContext>
     {
         ReactionRolesModule()
         {
             Main.Client.SelectMenuExecuted += Client_SelectMenuExecuted;
-
         }
         private async Task Client_SelectMenuExecuted(SocketInteraction interaction)
         {
             await RespondAsync(JsonConvert.SerializeObject(interaction));
         }
-        private static Dictionary<ulong, List<GuildEmote>> Emotes = new Dictionary<ulong, List<GuildEmote>>();
-        private static Dictionary<ulong, ReactionRoleMessage> ReactionRoleMessages = new Dictionary<ulong, ReactionRoleMessage>();
+        private static readonly Dictionary<ulong, List<GuildEmote>> Emotes = new();
+        private static readonly Dictionary<ulong, ReactionRoleMessage> ReactionRoleMessages = new();
 
         [SlashCommand("help", "Shows help for the reaction roles module")]
         public async Task HelpAsync()

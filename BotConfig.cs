@@ -4,8 +4,5 @@ using Newtonsoft.Json;
 
 namespace AstolfoBot
 {
-    public class BotConfig
-    {
-
-    }
+    public class BotConfig { }
 }

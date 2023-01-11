@@ -2,9 +2,10 @@ using System.Runtime.InteropServices;
 
 namespace AstolfoBot
 {
-    public static class OnExit
+    public static partial class OnExit
     {
-        public static EventHandler<int>? onExit;
+        public static readonly EventHandler<int>? onExit;
+
         public static void Start()
         {
             handler = new ConsoleEventDelegate(ConsoleEventCallback);
@@ -16,10 +17,18 @@ namespace AstolfoBot
             onExit?.Invoke(null, eventType);
             return false;
         }
-        static ConsoleEventDelegate? handler;   // Keeps it from getting garbage collected
-                                                // Pinvoke
+
+        static ConsoleEventDelegate? handler; // Keeps it from getting garbage collected
+
+        // Pinvoke
         private delegate bool ConsoleEventDelegate(int eventType);
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool SetConsoleCtrlHandler(ConsoleEventDelegate callback, bool add);
+
+        [LibraryImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static partial bool
+        SetConsoleCtrlHandler(
+            ConsoleEventDelegate callback,
+            [MarshalAs(UnmanagedType.Bool)] bool add
+        );
     }
 }

@@ -27,7 +27,6 @@ namespace AstolfoBot
             Console.WriteLine(logmsg);
             File.AppendAllText("Logs/latest.log", logmsg + "\n");
 
-
             Console.ResetColor();
         }
         public static Task Log(Discord.LogMessage logMessage)

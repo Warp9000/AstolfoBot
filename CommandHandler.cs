@@ -8,7 +8,7 @@ namespace AstolfoBot
     public class CommandHandler
     {
         public readonly DiscordSocketClient Client;
-        public static InteractionService InteractionService = null!;
+        public InteractionService InteractionService = null!;
 
         public CommandHandler(Discord.WebSocket.DiscordSocketClient client)
         {
@@ -29,7 +29,7 @@ namespace AstolfoBot
             await InteractionService.AddModulesAsync(assembly: System.Reflection.Assembly.GetExecutingAssembly(),
                                             services: null);
 
-            Logger.Debug(InteractionService.Modules.Count() + " modules loaded:", this);
+            Logger.Debug(InteractionService.Modules.Count + " modules loaded:", this);
             foreach (var module in InteractionService.Modules)
             {
                 Logger.Debug(module.Name, this);
@@ -90,8 +90,8 @@ namespace AstolfoBot
                         await context.Interaction.RespondAsync("Invalid number or arguments");
                         break;
                     case InteractionCommandError.Exception:
-                        var admins = JsonConvert.DeserializeObject<ulong[]>(File.ReadAllText("botadmins.json")) ?? new ulong[0];
-                        var testers = JsonConvert.DeserializeObject<ulong[]>(File.ReadAllText("testers.json")) ?? new ulong[0];
+                        var admins = JsonConvert.DeserializeObject<ulong[]>(File.ReadAllText("botadmins.json")) ?? Array.Empty<ulong>();
+                        var testers = JsonConvert.DeserializeObject<ulong[]>(File.ReadAllText("testers.json")) ?? Array.Empty<ulong>();
                         if (admins.Contains(context.User.Id) || testers.Contains(context.User.Id))
                         {
                             await context.Interaction.RespondAsync(
