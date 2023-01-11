@@ -18,7 +18,7 @@ namespace AstolfoBot.Modules.Logs
         {
             try
             {
-                if(channel.HasValue && channel.Value is IGuildChannel guildChannel)
+                if (channel.HasValue && channel.Value is IGuildChannel guildChannel)
                 {
                     GuildConfig cfg = guildChannel.Guild.GetConfig();
                     if (message.HasValue)
@@ -54,7 +54,7 @@ namespace AstolfoBot.Modules.Logs
         }
         public async Task OnMessagesBulkDeleted(IReadOnlyCollection<Cacheable<IMessage, ulong>> messages, Cacheable<IMessageChannel, ulong> channel)
         {
-            if(channel.HasValue && channel.Value is IGuildChannel guildChannel)
+            if (channel.HasValue && channel.Value is IGuildChannel guildChannel)
             {
                 GuildConfig cfg = guildChannel.Guild.GetConfig();
                 if (messages.Count > 0)
@@ -75,13 +75,14 @@ namespace AstolfoBot.Modules.Logs
 
                     string messageContent = "yyyy-MM-dd HH:mm:ss | Author: Content\n--------------------------------------------------\n";
                     var msgs = messages.ToList();
+                    msgs.RemoveAll(x => !x.HasValue);
                     msgs.Sort((x, y) => x.Value.Timestamp.CompareTo(y.Value.Timestamp));
                     foreach (var message in msgs)
                     {
                         if (message.HasValue)
                         {
                             messageContent += message.Value.Timestamp.ToString("yyyy-MM-dd HH:mm:ss") + " | " +
-                            $"{authors[0].Username}#{authors[0].Discriminator} ({authors[0].Id}): " +
+                            $"{message.Value.Author.Username}#{message.Value.Author.Discriminator} ({message.Value.Author.Id}): " +
                             message.Value.Content + "\n";
                         }
                     }
@@ -105,7 +106,7 @@ namespace AstolfoBot.Modules.Logs
                     }
                     FileLogManager.WriteDeletedMessages(guildChannel.GuildId, channel.Id, msgs.Select(x => JsonMessage.FromIMessage(x.Value)).ToList());
                     File.Delete("bulkDelete.txt");
-                    
+
                 }
             }
             else
@@ -113,7 +114,7 @@ namespace AstolfoBot.Modules.Logs
                 Logger.Debug("Channel is null", this);
                 return;
             }
-            
+
         }
     }
 }
