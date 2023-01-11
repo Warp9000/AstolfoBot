@@ -47,7 +47,7 @@ namespace AstolfoBot.Modules.Tests
                         .WithImageUrl("https://cdn.discordapp.com/avatars/1055586888884428941/41b37cd5ff72ab7f40ee99bb9824581c.webp")
                         .WithCurrentTimestamp()
                         .WithUrl("https://discord.com");
-                    await RespondAsync(JsonConvert.SerializeObject("```json\n" + eb + "\n```", Formatting.Indented));
+                    await RespondAsync("```json\n" + JsonConvert.SerializeObject(eb, Formatting.Indented) + "\n```");
                     return;
                 }
                 var embed = JsonConvert.DeserializeObject<EmbedBuilder>(json)!;
@@ -59,6 +59,7 @@ namespace AstolfoBot.Modules.Tests
             }
         }
         [SlashCommand("exception", "it just throws an exception")]
+        [Tests.RequireTester]
         public static async Task ExceptionCommand()
         {
             await Task.Delay(0);
