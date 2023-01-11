@@ -71,14 +71,14 @@ namespace AstolfoBot
             }
             // await Task.Delay(-1);
         }
-        public async Task StopAsync()
+        public static async Task StopAsync()
         {
-            Logger.Debug("Stopping...", this);
+            Logger.Debug("Stopping...", "Main");
             await Client.SetStatusAsync(UserStatus.Invisible);
             await Client!.StopAsync();
             await Client.LogoutAsync();
             Config.ConfigManager.SaveToFile();
-            Logger.Debug("Saved Configs", this);
+            Logger.Debug("Saved Configs", "Main");
         }
     }
 }
