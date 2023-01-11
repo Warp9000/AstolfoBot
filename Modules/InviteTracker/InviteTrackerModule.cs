@@ -45,7 +45,7 @@ namespace AstolfoBot.Modules.InviteTracker
                 await RespondAsync(JsonConvert.SerializeObject(e, Formatting.Indented));
             }
         }
-        public async Task OnUserJoined(SocketGuildUser socketGuildUser)
+        public static async Task OnUserJoined(SocketGuildUser socketGuildUser)
         {
             var oldInvites = Invites[socketGuildUser.Guild.Id];
             var newInvites = await socketGuildUser.Guild.GetInvitesAsync();
@@ -53,9 +53,9 @@ namespace AstolfoBot.Modules.InviteTracker
             {
                 if (newInvites.FirstOrDefault(x => x.Code == inv.Code)?.Uses > inv.Uses)
                 {
-                    var cfg = Context.Guild.GetConfig();
+                    var cfg = socketGuildUser.Guild.GetConfig();
                     if (cfg.LogChannel != null)
-                        await cfg.LogChannel.SendMessageAsync($"User {socketGuildUser.Mention} was invited by {inv.Inviter} using invite `{inv.Url}`");
+                        await cfg.LogChannel.SendMessageAsync($"User {socketGuildUser.Mention} was invited by {inv.Inviter} using invite `{inv.Code}`");
                 }
             }
         }

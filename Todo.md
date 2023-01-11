@@ -28,6 +28,7 @@
         ✔️ Ban
         ✔️ Mute
         ❌ Purge
+        ❌ Lockdown
 
     ❌ Reaction roles
 
