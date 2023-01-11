@@ -37,8 +37,7 @@ namespace AstolfoBot.Modules.Moderation
                 return;
             }
             reason +=
-                $"\n\nModerator: {Context.User.Username}#{
-                    Context.User.Discriminator} ({Context.User.Id})";
+                $"\n\nModerator: {Context.User.Username}#{Context.User.Discriminator} ({Context.User.Id})";
             await user.BanAsync(deleteDays, reason);
             var embed =
                 new EmbedBuilder()
@@ -56,14 +55,13 @@ namespace AstolfoBot.Modules.Moderation
         [RequireBotPermission(GuildPermission.BanMembers)]
         public async Task
         UnbanUserAsync(
-            [Summary("user", "The user to unban")] SocketUser user,
+            [Autocomplete(typeof(BannedUserAutocomplete))][Summary("user", "The user to unban")] ulong user,
             [Summary("reason", "The reason for the unban")]
             string reason = "No reason provided"
         )
         {
             reason +=
-                $"\n\nModerator: {Context.User.Username}#{
-                    Context.User.Discriminator} ({Context.User.Id})";
+                $"\n\nModerator: {Context.User.Username}#{Context.User.Discriminator} ({Context.User.Id})";
             await Context
                 .Guild
                 .RemoveBanAsync(user,
@@ -71,7 +69,7 @@ namespace AstolfoBot.Modules.Moderation
             var embed =
                 new EmbedBuilder()
                     .WithTitle("User unbanned")
-                    .WithDescription($"User: {user.Mention}\nReason: {reason}")
+                    .WithDescription($"User: {user}\nReason: {reason}")
                     .WithColor(Color.Green)
                     .WithCurrentTimestamp()
                     .Build();
@@ -105,8 +103,7 @@ namespace AstolfoBot.Modules.Moderation
                 return;
             }
             reason +=
-                $"\n\nModerator: {Context.User.Username}#{
-                    Context.User.Discriminator} ({Context.User.Id})";
+                $"\n\nModerator: {Context.User.Username}#{Context.User.Discriminator} ({Context.User.Id})";
             await user.KickAsync(reason);
             var embed =
                 new EmbedBuilder()
@@ -147,8 +144,7 @@ namespace AstolfoBot.Modules.Moderation
             }
 
             reason +=
-                $"\n\nModerator: {Context.User.Username}#{
-                    Context.User.Discriminator} ({Context.User.Id})";
+                $"\n\nModerator: {Context.User.Username}#{Context.User.Discriminator} ({Context.User.Id})";
 
             if (!duration.HasValue)
             {
@@ -163,8 +159,7 @@ namespace AstolfoBot.Modules.Moderation
                 new EmbedBuilder()
                     .WithTitle("User muted")
                     .WithDescription($"User: {user.Mention}\n" +
-                    $"Duration: {
-                        duration
+                    $"Duration: {duration
                             .Value:dd' days, 'hh' hours, 'mm' minutes, 'ss' seconds'}\n" +
                     $"Reason: {reason}")
                     .WithColor(Color.Red)
@@ -212,11 +207,11 @@ namespace AstolfoBot.Modules.Moderation
             }
 
             reason +=
-                $"\n\nModerator: {Context.User.Username}#{
-                    Context.User.Discriminator} ({Context.User.Id})";
+                $"\n\nModerator: {Context.User.Username}#{Context.User.Discriminator} ({Context.User.Id})";
 
             await user
-                .RemoveTimeOutAsync(new RequestOptions {
+                .RemoveTimeOutAsync(new RequestOptions
+                {
                     AuditLogReason = reason
                 });
 
@@ -225,6 +220,26 @@ namespace AstolfoBot.Modules.Moderation
                     .WithTitle("User unmuted")
                     .WithDescription($"User: {user.Mention}\nReason: {reason}")
                     .WithColor(Color.Green)
+                    .WithCurrentTimestamp()
+                    .Build();
+            await Logs.LoggerModule.LogToChannel(embed, Context.Guild);
+            await RespondAsync(embed: embed);
+        }
+        [SlashCommand("purge", "Purges messages")]
+        [RequireUserPermission(GuildPermission.ManageMessages)]
+        public async Task
+        PurgeMessagesAsync(
+            [Summary("amount", "The amount of messages to purge")]
+            int amount
+        )
+        {
+            var messages = await Context.Channel.GetMessagesAsync(amount).FlattenAsync();
+            await (Context.Channel as SocketTextChannel)!.DeleteMessagesAsync(messages);
+            var embed =
+                new EmbedBuilder()
+                    .WithTitle("Messages purged")
+                    .WithDescription($"Amount: {amount}")
+                    .WithColor(Color.Red)
                     .WithCurrentTimestamp()
                     .Build();
             await Logs.LoggerModule.LogToChannel(embed, Context.Guild);
