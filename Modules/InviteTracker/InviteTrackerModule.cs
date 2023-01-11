@@ -59,6 +59,7 @@ namespace AstolfoBot.Modules.InviteTracker
                         await cfg.LogChannel.SendMessageAsync($"User {socketGuildUser.Mention} was invited by {inv.Inviter} using invite `{inv.Url}`");
                 }
             }
+            Invites[socketGuildUser.Guild.Id] = newInvites.ToArray();
         }
         public async Task OnInviteCreated(SocketInvite socketInvite)
         {
