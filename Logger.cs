@@ -2,6 +2,7 @@ namespace AstolfoBot
 {
     public static class Logger
     {
+        private static string FileLogBuffer = "";
         public static void Log(string message, object source, LogSeverity severity = LogSeverity.Info, Exception? exception = null)
         {
             Console.ForegroundColor = severity switch
@@ -25,7 +26,16 @@ namespace AstolfoBot
             string logmsg = $"{DateTime.Now} [{severity}]{new string(' ', 9 - severity.ToString().Length)}[{source}] {message}" +
                 $"{(exception == null ? "" : " \t" + exception + "\n" + exception.StackTrace)}";
             Console.WriteLine(logmsg);
-            File.AppendAllText("Logs/latest.log", logmsg + "\n");
+            try
+            {
+                File.AppendAllText("Logs/latest.log", FileLogBuffer + logmsg + "\n");
+                FileLogBuffer = "";
+            }
+            catch (Exception e)
+            {
+                FileLogBuffer += logmsg + "\n";
+                Console.WriteLine(e.Message);
+            }
 
             Console.ResetColor();
         }
