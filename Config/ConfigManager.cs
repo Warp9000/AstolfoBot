@@ -5,7 +5,8 @@ namespace AstolfoBot.Config
     public static class ConfigManager
     {
         public static Dictionary<ulong, GuildConfig> GuildConfig
-        { get; set;
+        {
+            get; set;
         } = new Dictionary<ulong, GuildConfig>();
 
         public static GuildConfig GetGuildConfig(ulong guildId)
@@ -69,12 +70,16 @@ namespace AstolfoBot.Config
 
         public static void LoadFromFile()
         {
+            if (!Directory.Exists("Data/Guilds"))
+            {
+                Directory.CreateDirectory("Data/Guilds");
+            }
             foreach (var guild in Directory.GetDirectories("Data/Guilds"))
             {
                 if (File.Exists($"{guild}/config.json"))
                 {
                     GuildConfig
-                        .Add(ulong.Parse(guild.Split(new char[2]{'/','\\'})[^1]),
+                        .Add(ulong.Parse(guild.Split(new char[2] { '/', '\\' })[^1]),
                         JsonConvert
                             .DeserializeObject<GuildConfig>(File
                                 .ReadAllText($"{guild}/config.json")));
