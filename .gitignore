@@ -2,6 +2,7 @@
 /bin
 /Data
 /Logs
+/images
 Token.txt
 botadmins.json
 testers.json
