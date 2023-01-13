@@ -54,8 +54,8 @@ namespace AstolfoBot.Modules.InviteTracker
                 if (newInvites.FirstOrDefault(x => x.Code == inv.Code)?.Uses > inv.Uses)
                 {
                     var cfg = socketGuildUser.Guild.GetConfig();
-                    if (cfg.LogChannel != null)
-                        await cfg.LogChannel.SendMessageAsync($"User {socketGuildUser.Mention} was invited by {inv.Inviter} using invite `{inv.Code}`");
+                    if (cfg.InviteLogChannel != null)
+                        await cfg.InviteLogChannel.SendMessageAsync($"User {socketGuildUser.Mention} was invited by {inv.Inviter} using invite `{inv.Code}`");
                 }
             }
             Invites[socketGuildUser.Guild.Id] = newInvites.ToArray();
