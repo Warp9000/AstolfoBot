@@ -108,6 +108,24 @@ namespace AstolfoBot.Modules.Logs
                 Logger.Error("Error getting logs", "LoggerModule", e);
             }
         }
+        [SlashCommand("snipe", "Gets the last deleted message in the channel")]
+        public async Task SnipeCommand()
+        {
+            var messages = FileLogManager.GetDeletedMessages(Context.Guild.Id, Context.Channel.Id, (DateTime.Now.AddDays(-1), DateTime.Now));
+            if (messages.Count == 0)
+            {
+                await RespondAsync("No messages found");
+                return;
+            }
+            var message = messages.Last();
+            var eb = new EmbedBuilder()
+                .WithTitle("Sniped message")
+                .WithDescription(message.Content)
+                .WithColor(Color.Red)
+                .WithFooter($"Deleted by {message.AuthorUsername}#{message.AuthorDiscriminator} ({message.AuthorId})")
+                .WithTimestamp(message.Timestamp);
+            await RespondAsync(embed: eb.Build());
+        }
 
         public enum LogType
         {
