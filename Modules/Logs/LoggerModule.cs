@@ -122,7 +122,7 @@ namespace AstolfoBot.Modules.Logs
                 .WithTitle("Sniped message")
                 .WithDescription(message.Content)
                 .WithColor(Color.Red)
-                .WithFooter($"Deleted by {message.AuthorUsername}#{message.AuthorDiscriminator} ({message.AuthorId})")
+                .WithFooter($"Message by {message.AuthorUsername}#{message.AuthorDiscriminator} ({message.AuthorId})")
                 .WithTimestamp(message.Timestamp);
             await RespondAsync(embed: eb.Build());
         }

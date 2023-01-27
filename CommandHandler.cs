@@ -30,15 +30,7 @@ namespace AstolfoBot
                                             services: null);
 
             Logger.Debug(InteractionService.Modules.Count + " modules loaded:", this);
-            foreach (var module in InteractionService.Modules)
-            {
-                Logger.Debug(module.Name, this);
-            }
             Logger.Debug(InteractionService.SlashCommands.Count + " commands loaded:", this);
-            foreach (var command in InteractionService.SlashCommands)
-            {
-                Logger.Debug(command.Name, this);
-            }
             Client.InteractionCreated += HandleInteraction;
         }
 
@@ -64,7 +56,7 @@ namespace AstolfoBot
             {
                 var context = new SocketInteractionContext(Client, interaction);
                 var result = await InteractionService.ExecuteCommandAsync(context, null);
-                Logger.Debug($"Executed command result: {result.IsSuccess}: {result.Error}: {result.ErrorReason}", this);
+                // Logger.Debug($"Executed command result: {result.IsSuccess}: {result.Error}: {result.ErrorReason}", this);
             }
             catch (Exception ex)
             {
