@@ -28,6 +28,11 @@ namespace AstolfoBot
             Console.WriteLine(logmsg);
             try
             {
+                if (File.GetLastWriteTime("Logs/latest.log").Date != DateTime.Now.Date)
+                {
+                    File.Move("Logs/latest.log", $"Logs/{File.GetLastWriteTime("Logs/latest.log"):yyyy-MM-dd_HH-mm-ss}.log");
+                    FileLogBuffer += $"Log continued from {File.GetLastWriteTime("Logs/latest.log"):yyyy-MM-dd_HH-mm-ss}.log";
+                }
                 File.AppendAllText("Logs/latest.log", FileLogBuffer + logmsg + "\n");
                 FileLogBuffer = "";
             }
