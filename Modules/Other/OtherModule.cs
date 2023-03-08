@@ -24,5 +24,18 @@ namespace AstolfoBot.Modules.Other
             Global,
             Server
         }
+        [SlashCommand("membercount", "Gets the user count of the server")]
+        public async Task MemberCountAsync()
+        {
+            var embed = new EmbedBuilder()
+                .WithAuthor(Context.Guild.Name)
+                .WithColor(new Color(0xE26D8F))
+                .WithFooter("Member Count");
+            var users = Context.Guild.Users;
+            var bots = users.Where(x => x.IsBot).Count();
+            var humans = users.Where(x => !x.IsBot).Count();
+            embed.WithDescription($"Humans: {humans}\nBots: {bots}\nTotal: {users.Count}");
+            await RespondAsync(embed: embed.Build());
+        }
     }
 }

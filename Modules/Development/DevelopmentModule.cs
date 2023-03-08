@@ -18,7 +18,7 @@ namespace AstolfoBot.Modules.Development
             var method = GetType().GetMethod(command);
             if (method == null)
             {
-                await RespondAsync("Command not found");
+                await RespondAsync("Command not found", ephemeral: true);
                 return;
             }
             var arguments = new List<object>();
