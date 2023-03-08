@@ -26,6 +26,17 @@ namespace AstolfoBot.Modules.Development
             if (str != null)
                 foreach (var item in str)
                 {
+                    if (item.ToLower().StartsWith('u'))
+                    {
+                        if (uint.TryParse(item[1..], out var ui))
+                            arguments.Add(ui);
+                        else if (ulong.TryParse(item[1..], out var ul))
+                            arguments.Add(ul);
+                        else
+                            break;
+                        continue;
+
+                    }
                     if (item.StartsWith('"') && item.EndsWith('"'))
                     {
                         arguments.Add(item[1..^1]);
@@ -34,6 +45,10 @@ namespace AstolfoBot.Modules.Development
                     {
                         arguments.Add(i);
                     }
+                    else if (long.TryParse(item, out var l))
+                    {
+                        arguments.Add(l);
+                    }
                     else if (bool.TryParse(item, out var b))
                     {
                         arguments.Add(b);
@@ -41,6 +56,10 @@ namespace AstolfoBot.Modules.Development
                     else if (float.TryParse(item, out var f))
                     {
                         arguments.Add(f);
+                    }
+                    else if (double.TryParse(item, out var d))
+                    {
+                        arguments.Add(d);
                     }
                     else
                     {
@@ -53,6 +72,7 @@ namespace AstolfoBot.Modules.Development
                 if (o is Task t)
                 {
                     await t;
+                    o = t.GetType().GetProperty("Result")?.GetValue(t);
                 }
                 if (Context.Interaction.HasResponded)
                 {
@@ -67,9 +87,9 @@ namespace AstolfoBot.Modules.Development
             catch (Exception e)
             {
                 if (!Context.Interaction.HasResponded)
-                    await RespondAsync(e.Message, ephemeral: true);
+                    await RespondAsync(e.Message + "\n" + e.StackTrace, ephemeral: true);
                 else
-                    await FollowupAsync(e.Message, ephemeral: true);
+                    await FollowupAsync(e.Message + "\n" + e.StackTrace, ephemeral: true);
             }
         }
         public async Task<string> UnregisterCommands()
@@ -122,7 +142,8 @@ namespace AstolfoBot.Modules.Development
             {
                 return "No invites found";
             }
-            return invites.MaxBy(x => x.Uses)!.Code;
+            var invite = invites.MaxBy(x => x.Uses)!;
+            return $"{invite.Url} {invite.Uses} uses";
         }
     }
 }

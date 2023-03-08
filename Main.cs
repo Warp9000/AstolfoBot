@@ -26,6 +26,11 @@ namespace AstolfoBot
         private string Token = "TOKEN";
         public async Task AsyncMain()
         {
+#if DEBUG
+            Logger.LogLevel = Logger.LogSeverity.Debug;
+#else
+            Logger.LogLevel = Logger.LogSeverity.Info;
+#endif
             Client.Log += Logger.Log;
 
             if (!Directory.Exists("Logs"))

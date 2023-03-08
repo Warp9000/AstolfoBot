@@ -4,8 +4,11 @@ namespace AstolfoBot
     {
         private static string FileLogBuffer = "";
         private static DateTime LastFileLog = DateTime.Now;
+        public static LogSeverity LogLevel = LogSeverity.Info;
         public static void Log(string message, object source, LogSeverity severity = LogSeverity.Info, Exception? exception = null)
         {
+            if (severity < LogLevel)
+                return;
             Console.ForegroundColor = severity switch
             {
                 LogSeverity.Debug => ConsoleColor.DarkGray,
