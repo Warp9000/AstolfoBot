@@ -9,8 +9,8 @@ namespace AstolfoBot.Modules.Osu.Api
     {
         private const string BaseOsuUrl = "https://osu.ppy.sh/api/v2/";
         private const string BaseLazerUrl = "https://lazer.ppy.sh/api/v2/";
-        private HttpClient Client;
-        private ClientCredentials clientCredentials = new ClientCredentials();
+        private readonly HttpClient Client;
+        private ClientCredentials clientCredentials = new();
         public OsuApiWrapper()
         {
             Client = new HttpClient();
@@ -26,43 +26,49 @@ namespace AstolfoBot.Modules.Osu.Api
         {
             limit ??= 10;
             offset ??= 0;
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("include_fails", includeFails == true ? "1" : "0");
+            Dictionary<string, string> parameters = new()
+            {
+                { "include_fails", includeFails == true ? "1" : "0" }
+            };
             if (Mode != null)
                 parameters.Add("mode", Mode.ToString()!);
             parameters.Add("limit", limit.ToString()!);
             parameters.Add("offset", offset.ToString()!);
             string url = $"users/{id}/scores/recent?{string.Join("&", parameters.Select(x => $"{x.Key}={x.Value}"))}";
             var scores = await GetAsync<Structures.Score[]>(url);
-            return scores ?? new Structures.Score[0];
+            return scores ?? Array.Empty<Structures.Score>();
         }
         public async Task<Structures.Score[]> GetUserScoresBestAsync(string id, Structures.GameMode? Mode = null, int? limit = 10, int? offset = 0, bool? includeFails = true)
         {
             limit ??= 10;
             offset ??= 0;
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("include_fails", includeFails == true ? "1" : "0");
+            Dictionary<string, string> parameters = new()
+            {
+                { "include_fails", includeFails == true ? "1" : "0" }
+            };
             if (Mode != null)
                 parameters.Add("mode", Mode.ToString()!);
             parameters.Add("limit", limit.ToString()!);
             parameters.Add("offset", offset.ToString()!);
             string url = $"users/{id}/scores/best?{string.Join("&", parameters.Select(x => $"{x.Key}={x.Value}"))}";
             var scores = await GetAsync<Structures.Score[]>(url);
-            return scores ?? new Structures.Score[0];
+            return scores ?? Array.Empty<Structures.Score>();
         }
         public async Task<Structures.Score[]> GetUserScoresFirstsAsync(string id, Structures.GameMode? Mode = null, int? limit = 10, int? offset = 0, bool? includeFails = true)
         {
             limit ??= 10;
             offset ??= 0;
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("include_fails", includeFails == true ? "1" : "0");
+            Dictionary<string, string> parameters = new()
+            {
+                { "include_fails", includeFails == true ? "1" : "0" }
+            };
             if (Mode != null)
                 parameters.Add("mode", Mode.ToString()!);
             parameters.Add("limit", limit.ToString()!);
             parameters.Add("offset", offset.ToString()!);
             string url = $"users/{id}/firsts?{string.Join("&", parameters.Select(x => $"{x.Key}={x.Value}"))}";
             var scores = await GetAsync<Structures.Score[]>(url);
-            return scores ?? new Structures.Score[0];
+            return scores ?? Array.Empty<Structures.Score>();
         }
         public async Task<Structures.Beatmapset> GetBeatmapsetAsync(ulong id)
         {

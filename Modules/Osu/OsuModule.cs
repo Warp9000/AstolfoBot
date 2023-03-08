@@ -106,7 +106,7 @@ namespace AstolfoBot.Modules.Osu
                 if (ulong.TryParse(beatmap, out var id))
                 {
                     var map = await Api.GetBeatmapAsync(id);
-                    var embed = map.Embed();
+                    var embed = /*map.Embed();*/ new EmbedBuilder();
                     await RespondAsync(embed: embed.Build());
                 }
                 else

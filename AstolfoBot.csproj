@@ -11,8 +11,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2"/>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="botadmins.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="testers.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="botadmins.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('botadmins.json')" />
+    <Content Include="testers.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('testers.json')" />
     <Content Include="Data\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
     

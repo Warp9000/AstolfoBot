@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace AstolfoBot.Modules.Osu.Api
 {
-    public class Structures
+    public class Structures_
     {
         // ignore null warnings
 #pragma warning disable CS8618
@@ -288,7 +288,6 @@ namespace AstolfoBot.Modules.Osu.Api
             public List<Sub.Beatmapset> beatmapsets { get; set; }
             public Sub.Search search { get; set; }
             public object recommended_difficulty { get; set; }
-            public object error { get; set; }
             public int total { get; set; }
             public object cursor { get; set; }
             public object cursor_string { get; set; }

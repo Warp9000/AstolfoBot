@@ -23,22 +23,38 @@ namespace AstolfoBot.Modules.Osu.Api
         public static EmbedBuilder Embed(this Structures.Beatmap beatmap)
         {
             var embed = new EmbedBuilder();
-            embed.WithTitle(beatmap.beatmapset.artist + " - " + beatmap.beatmapset.title);
-            embed.WithUrl(beatmap.url);
-            embed.WithThumbnailUrl(beatmap.beatmapset.covers.cover);
+            embed.WithTitle(beatmap.Beatmapset.Artist + " - " + beatmap.Beatmapset.Title);
+            embed.WithUrl(beatmap.Url);
+            embed.WithThumbnailUrl(beatmap.Beatmapset.Covers.Cover);
 
             string desc = "";
-            desc += $"**Length:** {new TimeOnly(beatmap.total_length * 1000).ToString("mm\\:ss")} ({new TimeOnly(beatmap.hit_length * 1000).ToString("mm\\:ss")} drain)";
-            desc += $"**BPM:** {beatmap.bpm:N1}\n";
-            desc += $"**Download:** [osu!direct](osu://b/{beatmap.id}) [web](https://osu.ppy.sh/d/{beatmap.beatmapset.id})\n";
+            desc += $"**Length:** {new TimeOnly(beatmap.TotalLength * 1000).ToString("mm\\:ss")} ({new TimeOnly(beatmap.HitLength * 1000).ToString("mm\\:ss")} drain)";
+            desc += $"**BPM:** {beatmap.Bpm:N1}\n";
+            desc += $"**Download:** [osu!direct](osu://b/{beatmap.Id}) [web](https://osu.ppy.sh/d/{beatmap.Beatmapset.Id})\n";
             embed.WithDescription(desc);
 
             string field = "";
-            field += $"**Difficulty:** {beatmap.difficulty_rating:N2}★ **Max Combo:** {beatmap.max_combo:N0}x\n";
-            field += $"**AR:** {beatmap.ar:N2} **OD:** {-1:N2} **CS:** {beatmap.cs:N2} **HP:** {beatmap.drain:N2}\n";
+            field += $"**Difficulty:** {beatmap.DifficultyRating:N2}★ **Max Combo:** {beatmap.MaxCombo:N0}x\n";
+            field += $"**AR:** {beatmap.Ar:N2} **OD:** {-1:N2} **CS:** {beatmap.Cs:N2} **HP:** {beatmap.Drain:N2}\n";
             field += $"**PP:** when im not lazy";
             embed.AddField("Stats", field);
 
+            return embed;
+        }
+        public static EmbedBuilder Embed(this Structures.Score score, Structures.Beatmap beatmap)
+        {
+            var embed = new EmbedBuilder();
+            embed.WithTitle($"{beatmap.Beatmapset.Title} [{beatmap.DifficultyRating:N2}★]");
+            embed.WithUrl(beatmap.Url);
+            embed.WithThumbnailUrl(beatmap.Beatmapset.Covers.Cover);
+
+            string desc = "";
+            desc += $"**Score:** {score.Score_:N0} ({score.Rank})\n";
+            desc += $"**Accuracy:** {score.Accuracy:N2}%\n";
+            desc += $"**Combo:** {score.MaxCombo:N0}x/{beatmap.MaxCombo:N0}x\n";
+            desc += $"**PP:** {score.Pp:N2}pp\n";
+            desc += $"**Mods:** {score.Mods}\n";
+            embed.WithDescription(desc);
             return embed;
         }
     }
