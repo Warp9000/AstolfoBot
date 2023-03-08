@@ -10,7 +10,11 @@ namespace AstolfoBot
         {
             var ClientConfig = new DiscordSocketConfig
             {
+#if DEBUG
                 LogLevel = LogSeverity.Debug,
+#else
+                LogLevel = LogSeverity.Info,
+#endif
                 MessageCacheSize = 1000,
                 AlwaysDownloadUsers = true,
                 GatewayIntents = GatewayIntents.All

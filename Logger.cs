@@ -3,6 +3,7 @@ namespace AstolfoBot
     public static class Logger
     {
         private static string FileLogBuffer = "";
+        private static DateTime LastFileLog = DateTime.Now;
         public static void Log(string message, object source, LogSeverity severity = LogSeverity.Info, Exception? exception = null)
         {
             Console.ForegroundColor = severity switch
@@ -28,10 +29,12 @@ namespace AstolfoBot
             Console.WriteLine(logmsg);
             try
             {
-                if (File.GetLastWriteTime("Logs/latest.log").Date != DateTime.Now.Date)
+                // if new day
+                if (LastFileLog.Day != DateTime.Now.Day)
                 {
+                    File.AppendAllText("Logs/latest.log", FileLogBuffer);
+                    FileLogBuffer = "";
                     File.Move("Logs/latest.log", $"Logs/{File.GetLastWriteTime("Logs/latest.log"):yyyy-MM-dd_HH-mm-ss}.log");
-                    FileLogBuffer += $"Log continued from {File.GetLastWriteTime("Logs/latest.log"):yyyy-MM-dd_HH-mm-ss}.log";
                 }
                 File.AppendAllText("Logs/latest.log", FileLogBuffer + logmsg + "\n");
                 FileLogBuffer = "";
