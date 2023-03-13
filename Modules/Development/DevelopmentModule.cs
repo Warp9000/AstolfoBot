@@ -5,18 +5,40 @@ using AstolfoBot.Modules.Tests;
 using Discord;
 using Discord.Interactions;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace AstolfoBot.Modules.Development
 {
     [Group("dev", "Development")]
     public class DevelopmentModule : InteractionModuleBase<SocketInteractionContext>
     {
+        private Dictionary<string, MethodInfo> Aliases = new Dictionary<string, MethodInfo>();
+        DevelopmentModule()
+        {
+            foreach (var method in GetType().GetMethods())
+            {
+                if (method.GetCustomAttributes(typeof(DevCommandAttribute), false).Length == 0)
+                {
+                    continue;
+                }
+                var attr = method.GetCustomAttribute<DevCommandAttribute>();
+                if (attr == null)
+                {
+                    continue;
+                }
+                foreach (var alias in attr.Aliases)
+                {
+                    Aliases.Add(alias, method);
+                }
+            }
+        }
+
         [SlashCommand("cmd", "yuh")]
         [RequireBotAdmin]
         public async Task Cmd(string command, string? args = null)
         {
-            var method = GetType().GetMethod(command);
-            if (method == null)
+            var method = GetType().GetMethod(command) ?? Aliases.GetValueOrDefault(command);
+            if (method == null || method.GetCustomAttributes(typeof(DevCommandAttribute), false).Length == 0)
             {
                 await RespondAsync("Command not found", ephemeral: true);
                 return;
@@ -92,6 +114,7 @@ namespace AstolfoBot.Modules.Development
                     await FollowupAsync(e.Message + "\n" + e.StackTrace, ephemeral: true);
             }
         }
+        [DevCommand]
         public async Task<string> UnregisterCommands()
         {
             foreach (var guild in Context.Client.Guilds)
@@ -100,6 +123,7 @@ namespace AstolfoBot.Modules.Development
             }
             return "Unregistered all commands";
         }
+        [DevCommand]
         public async Task Exit()
         {
             await DeferAsync(ephemeral: true);
@@ -111,9 +135,10 @@ namespace AstolfoBot.Modules.Development
             await Main.StopAsync();
             Environment.Exit(0);
         }
+        [DevCommand]
         public string[] Help()
         {
-            var methods = GetType().GetMethods();
+            var methods = GetType().GetMethods().Where(x => x.GetCustomAttributes(typeof(DevCommandAttribute), false).Length > 0);
             var list = new List<string>();
             foreach (var method in methods)
             {
@@ -124,6 +149,7 @@ namespace AstolfoBot.Modules.Development
             }
             return list.ToArray();
         }
+        [DevCommand(new[] { "GetG" })]
         public string[] GetGuilds()
         {
             var list = new List<string>();
@@ -133,6 +159,7 @@ namespace AstolfoBot.Modules.Development
             }
             return list.ToArray();
         }
+        [DevCommand(new[] { "GetGI" })]
         public async Task<string> GetGuildInvite(ulong guildId)
         {
             var guild = Context.Client.GetGuild(guildId);
@@ -144,6 +171,25 @@ namespace AstolfoBot.Modules.Development
             }
             var invite = invites.MaxBy(x => x.Uses)!;
             return $"{invite.Url} {invite.Uses} uses";
+        }
+        [DevCommand(new[] { "CreateI" })]
+        public async Task<string> CreateInvite(ulong guildId)
+        {
+            var guild = Context.Client.GetGuild(guildId);
+            var invite = await guild.TextChannels.First().CreateInviteAsync(120, 1, true, true);
+            return invite.Url;
+        }
+    }
+
+    public class DevCommandAttribute : Attribute
+    {
+        public string[] Aliases { get; }
+        public DevCommandAttribute(string[]? aliases = null)
+        {
+            if (aliases != null)
+                Aliases = aliases;
+            else
+                Aliases = new string[0];
         }
     }
 }
