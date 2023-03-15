@@ -12,9 +12,6 @@ namespace AstolfoBot.Config
         [JsonConverter(typeof(Converters.DiscordChannelConverter))]
         public ITextChannel? InviteLogChannel { get; set; }
 
-        [JsonConverter(typeof(Converters.TicketsConverter))]
-        public List<Modules.Tickets.Ticket> Tickets { get; set; }
-
         [JsonConverter(typeof(Converters.DiscordCategoryConverter))]
         public ICategoryChannel? OpenTicketCategory { get; set; }
 

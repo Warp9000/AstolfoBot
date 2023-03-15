@@ -20,10 +20,12 @@ namespace AstolfoBot
                 GatewayIntents = GatewayIntents.All
             };
             Client = new DiscordSocketClient(ClientConfig);
+            CommandHandler = new CommandHandler(Client);
         }
         public readonly static DiscordSocketClient Client;
         // public DiscordSocketConfig? ClientConfig;
         private string Token = "TOKEN";
+        public readonly static CommandHandler CommandHandler;
         public async Task AsyncMain()
         {
 #if DEBUG
@@ -58,8 +60,7 @@ namespace AstolfoBot
                 return Task.CompletedTask;
             };
 
-            var commandHandler = new CommandHandler(Client);
-            await commandHandler.InstallCommandsAsync();
+            await CommandHandler.InstallCommandsAsync();
 
             await Client.LoginAsync(TokenType.Bot, Token);
             await Client.StartAsync();

@@ -24,6 +24,7 @@ namespace AstolfoBot.Modules.Other
             Global,
             Server
         }
+
         [SlashCommand("membercount", "Gets the user count of the server")]
         public async Task MemberCountAsync()
         {
@@ -36,6 +37,53 @@ namespace AstolfoBot.Modules.Other
             var humans = users.Where(x => !x.IsBot).Count();
             embed.WithDescription($"Humans: {humans}\nBots: {bots}\nTotal: {users.Count}");
             await RespondAsync(embed: embed.Build());
+        }
+        [SlashCommand("help", "Shows help for the bot")]
+
+        public async Task HelpAsync([Summary("command", "The command to get help for"), Autocomplete(typeof(AstolfoBot.Completers.CommandAutocompleteHandler))] string? command = null)
+        {
+            var embed = new EmbedBuilder()
+                .WithTitle("Help")
+                .WithDescription("Use `/help [command]` to get help for a command")
+                .WithColor(new Color(0xE26D8F))
+                .WithFooter("Help");
+            foreach (var module in Main.CommandHandler.InteractionService.Modules)
+            {
+                if (module.IsSubModule)
+                {
+                    continue;
+                }
+                var group = module.IsSlashGroup ? $"{module.SlashGroupName} " : "";
+                var commands = GetCommands(module).Select(x =>
+                $"`/{group}{((x.Module.IsSlashGroup && x.Module != module) ? x.Module.SlashGroupName + " " : "")}{x.Name}` - {x.Description}");
+                var str = string.Join("\n", commands);
+                if (string.IsNullOrEmpty(str))
+                    continue;
+                var name = module.Name.Replace("Module", "");
+                var s = "";
+                foreach (var c in name)
+                {
+                    if (char.IsUpper(c))
+                        s += " ";
+                    s += c;
+                }
+                name = s.TrimStart(' ');
+                embed.AddField(name, str);
+            }
+            await RespondAsync(embed: embed.Build());
+        }
+        private SlashCommandInfo[] GetCommands(ModuleInfo module)
+        {
+            List<SlashCommandInfo> commands = new();
+            foreach (var command in module.SlashCommands)
+            {
+                commands.Add(command);
+            }
+            foreach (var subModule in module.SubModules)
+            {
+                commands.AddRange(GetCommands(subModule));
+            }
+            return commands.ToArray();
         }
     }
 }

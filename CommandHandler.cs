@@ -19,13 +19,13 @@ namespace AstolfoBot
         public async Task InstallCommandsAsync()
         {
             Logger.Verbose("Starting...", this);
+            Client.JoinedGuild += async (guild) =>
+            {
+                await InteractionService.RegisterCommandsToGuildAsync(guild.Id, true);
+                Logger.Debug("Added commands to " + guild.Id, this);
+            };
             Client.Ready += () =>
             {
-                Client.JoinedGuild += async (guild) =>
-                {
-                    await InteractionService.RegisterCommandsToGuildAsync(guild.Id, true);
-                    Logger.Debug("Added commands to " + guild.Id, this);
-                };
                 Task.Run(RegisterCommands);
                 Logger.Debug("Added RegisterCommands to ready handler", this);
                 return Task.CompletedTask;

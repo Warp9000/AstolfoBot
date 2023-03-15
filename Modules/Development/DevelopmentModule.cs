@@ -115,6 +115,24 @@ namespace AstolfoBot.Modules.Development
             }
         }
         [DevCommand]
+        public string[] Help()
+        {
+            var methods = GetType().GetMethods().Where(x => x.GetCustomAttributes(typeof(DevCommandAttribute), false).Length > 0);
+            var list = new List<string>();
+            foreach (var method in methods)
+            {
+                var name = method.Name;
+                var args = method.GetParameters().ToArray();
+                string[]? aliases = method.GetCustomAttribute<DevCommandAttribute>()?.Aliases;
+                aliases = aliases?.Length == 0 ? null : aliases;
+                var str = $"{name}({string.Join(", ", args.Select(x => x.ParameterType.Name + " " + x.Name))})";
+                if (aliases != null)
+                    str += $" [{string.Join(", ", aliases)}]";
+                list.Add(str);
+            }
+            return list.ToArray();
+        }
+        [DevCommand]
         public async Task<string> UnregisterCommands()
         {
             foreach (var guild in Context.Client.Guilds)
@@ -135,21 +153,7 @@ namespace AstolfoBot.Modules.Development
             await Main.StopAsync();
             Environment.Exit(0);
         }
-        [DevCommand]
-        public string[] Help()
-        {
-            var methods = GetType().GetMethods().Where(x => x.GetCustomAttributes(typeof(DevCommandAttribute), false).Length > 0);
-            var list = new List<string>();
-            foreach (var method in methods)
-            {
-                var name = method.Name;
-                var args = method.GetParameters().ToArray();
-                var str = $"{name}({string.Join(", ", args.Select(x => x.ParameterType.Name + " " + x.Name))})";
-                list.Add(str);
-            }
-            return list.ToArray();
-        }
-        [DevCommand(new[] { "GetG" })]
+        [DevCommand(new[] { "GetG", "GG" })]
         public string[] GetGuilds()
         {
             var list = new List<string>();
@@ -159,7 +163,7 @@ namespace AstolfoBot.Modules.Development
             }
             return list.ToArray();
         }
-        [DevCommand(new[] { "GetGI" })]
+        [DevCommand(new[] { "GetGI", "GGI" })]
         public async Task<string> GetGuildInvite(ulong guildId)
         {
             var guild = Context.Client.GetGuild(guildId);
@@ -172,24 +176,36 @@ namespace AstolfoBot.Modules.Development
             var invite = invites.MaxBy(x => x.Uses)!;
             return $"{invite.Url} {invite.Uses} uses";
         }
-        [DevCommand(new[] { "CreateI" })]
+        [DevCommand(new[] { "CreateGI", "CGI" })]
         public async Task<string> CreateInvite(ulong guildId)
         {
             var guild = Context.Client.GetGuild(guildId);
-            var invite = await guild.TextChannels.First().CreateInviteAsync(120, 1, true, true);
+            var invite = await guild.TextChannels.First().CreateInviteAsync(120, 1, false, true);
             return invite.Url;
+        }
+        [DevCommand(new[] { "FindU", "FU" })]
+        public string[] FindUser(string name)
+        {
+            var users = Context.Client.Guilds.SelectMany(x => x.Users).Where(x => x.Username.ToLower().Contains(name.ToLower()));
+            var list = new List<string>();
+            foreach (var user in users)
+            {
+                list.Add($"{user.Username}#{user.Discriminator} ({user.Id}) in {user.Guild.Name} ({user.Guild.Id})");
+            }
+            return list.ToArray();
         }
     }
 
     public class DevCommandAttribute : Attribute
     {
         public string[] Aliases { get; }
-        public DevCommandAttribute(string[]? aliases = null)
+        public DevCommandAttribute()
         {
-            if (aliases != null)
-                Aliases = aliases;
-            else
-                Aliases = new string[0];
+            Aliases = new string[0];
+        }
+        public DevCommandAttribute(string[] aliases)
+        {
+            Aliases = aliases;
         }
     }
 }
