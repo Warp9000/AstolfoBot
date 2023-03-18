@@ -46,11 +46,11 @@ namespace AstolfoBot.Modules.Counting
 
                 config.Counting.CurrentNumber++;
                 config.Counting.LastUser = (IGuildUser)message.Author;
-                config.SaveConfig(Context.Guild);
+                config.SaveConfig(((ITextChannel)message.Channel).Guild);
             }
             catch (Exception e)
             {
-                await ReplyAsync(e.Message);
+                Logger.Error(e.Message, this, e);
             }
         }
 

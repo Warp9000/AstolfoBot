@@ -32,7 +32,7 @@ namespace AstolfoBot.Modules.Logs
             if (message.HasValue && message.Value.Content != newMessage.Content)
             {
                 var embed = new EmbedBuilder()
-                    .WithTitle("Message edited")
+                    .WithTitle("Message edited in <#" + message.Value.Channel.Id + ">")
                     .WithAuthor(message.Value.Author)
                     .AddField("Before", message.Value.Content)
                     .AddField("After", newMessage.Content)

@@ -26,7 +26,7 @@ namespace AstolfoBot.Modules.Logs
                         if (cfg.LogChannel is not null)
                         {
                             var embed = new EmbedBuilder()
-                                .WithTitle("Message deleted in #" + message.Value.Channel.Name)
+                                .WithTitle("Message deleted in <#" + message.Value.Channel.Id + ">")
                                 .WithAuthor(message.Value.Author)
                                 .WithDescription(message.Value.Content)
                                 .WithColor(Color.Red)
@@ -90,11 +90,7 @@ namespace AstolfoBot.Modules.Logs
                     if (cfg.LogChannel is not null)
                     {
                         var embed = new EmbedBuilder()
-                        .WithTitle("Bulk delete in #" + channel.Value.Name + $" ({msgs.Count} messages)")
-                        .WithAuthor(new EmbedAuthorBuilder()
-                            .WithName(multipleAuthors ? "Multiple authors" :
-                            $"{authors[0].Username}#{authors[0].Discriminator} ({authors[0].Id})")
-                            .WithIconUrl(multipleAuthors ? null : authors[0].GetAvatarUrl()))
+                        .WithTitle("Bulk delete in <#" + channel.Value.Id + $"> ({msgs.Count} messages)")
                         .WithColor(Color.Red)
                         .WithCurrentTimestamp()
                         .Build();
