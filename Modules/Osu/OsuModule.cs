@@ -13,7 +13,7 @@ namespace AstolfoBot.Modules.Osu
     [Group("osu", "osu! related commands")]
     public class OsuModule : InteractionModuleBase<SocketInteractionContext>
     {
-        public static OsuApiWrapper Api { get; set; }
+        public static OsuApiWrapper Api { get; set; } = new OsuApiWrapper();
         public OsuModule()
         {
             Api = new OsuApiWrapper();

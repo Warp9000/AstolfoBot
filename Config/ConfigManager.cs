@@ -11,7 +11,7 @@ namespace AstolfoBot.Config
         {
             if (GuildConfig != null)
             {
-                if (GuildConfig.TryGetValue(guildId, out GuildConfig cfg))
+                if (GuildConfig.TryGetValue(guildId, out GuildConfig? cfg))
                 {
                     return cfg;
                 }
@@ -22,7 +22,7 @@ namespace AstolfoBot.Config
             }
             if (Directory.Exists($"Data/Guilds/{guildId}"))
             {
-                return JsonConvert.DeserializeObject<GuildConfig>(File.ReadAllText($"Data/Guilds/{guildId}/config.json"));
+                return JsonConvert.DeserializeObject<GuildConfig>(File.ReadAllText($"Data/Guilds/{guildId}/config.json"))!;
             }
             else
             {
@@ -110,7 +110,7 @@ namespace AstolfoBot.Config
                 if (File.Exists($"{guild}/config.json"))
                 {
                     GuildConfig.Add(ulong.Parse(guild.Split(new char[2] { '/', '\\' })[^1]),
-                    JsonConvert.DeserializeObject<GuildConfig>(File.ReadAllText($"{guild}/config.json")));
+                    JsonConvert.DeserializeObject<GuildConfig>(File.ReadAllText($"{guild}/config.json"))!);
                 }
             }
             foreach (var user in Directory.GetDirectories("Data/Users"))

@@ -17,7 +17,7 @@ namespace AstolfoBot.Completers
                 if (name.Contains(autocompleteInteraction.Data.Current.Name))
                     results.Add(new AutocompleteResult(name, command));
             }
-
+            await Task.Delay(0);
             return AutocompletionResult.FromSuccess(results.Take(25));
         }
     }
