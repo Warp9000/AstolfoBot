@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Discord.Rest;
 
 namespace AstolfoBot.Modules.Other
 {
@@ -9,14 +10,30 @@ namespace AstolfoBot.Modules.Other
         [SlashCommand("avatar", "Gets the avatar of a user")]
         public async Task AvatarAsync([Summary("user", "The user to get the avatar of")] IUser? user = null, [Summary("type", "The type of avatar to get")] AvatarType type = AvatarType.Global)
         {
-            // https://cdn.discordapp.com/guilds/990296400497631323/users/555218967954980874/avatars/cb4c4d028328368c8dd7dbb54749e650.png?size=4096
-            //                                   990296400497631323       555218967954980874
             user ??= Context.User;
             var embed = new EmbedBuilder()
                 .WithAuthor(user)
                 .WithImageUrl(type == AvatarType.Global ? user.GetAvatarUrl(size: 4096) : ((SocketGuildUser)user).GetGuildAvatarUrl(size: 4096))
                 .WithColor(new Color(0xE26D8F))
                 .WithFooter("Avatar");
+            await RespondAsync(embed: embed.Build());
+        }
+        [SlashCommand("banner", "Gets the banner of a user")]
+        public async Task BannerAsync([Summary("user", "The user to get the banner of")] IUser? user = null)
+        {
+            user ??= Context.User;
+            RestUser restUser = await Context.Client.Rest.GetUserAsync(user.Id);
+            string bannerUrl = restUser.GetBannerUrl(size: 4096);
+            if (bannerUrl == null)
+            {
+                await RespondAsync("This user does not have a banner");
+                return;
+            }
+            var embed = new EmbedBuilder()
+                .WithAuthor(user)
+                .WithImageUrl(bannerUrl)
+                .WithColor(new Color(0xE26D8F))
+                .WithFooter("Banner");
             await RespondAsync(embed: embed.Build());
         }
         public enum AvatarType
