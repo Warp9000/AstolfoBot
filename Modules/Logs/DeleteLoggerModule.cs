@@ -77,6 +77,10 @@ namespace AstolfoBot.Modules.Logs
                     var msgs = messages.ToList();
                     msgs.RemoveAll(x => !x.HasValue);
                     msgs.Sort((x, y) => x.Value.Timestamp.CompareTo(y.Value.Timestamp));
+                    if (!msgs.Any(x => string.IsNullOrEmpty(x.Value.Content)))
+                    {
+                        return;
+                    }
                     foreach (var message in msgs)
                     {
                         if (message.HasValue)
