@@ -1,7 +1,9 @@
+using System.Reflection.Emit;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using AstolfoBot.Config;
+using Newtonsoft.Json;
 
 namespace AstolfoBot.Modules.Emotes
 {
@@ -17,7 +19,8 @@ namespace AstolfoBot.Modules.Emotes
             var suggestions = new List<AutocompleteResult>();
             foreach (var type in types)
             {
-                suggestions.Add(new AutocompleteResult(type, type));
+                if (type.Contains(autocompleteInteraction.Data.Current.Value.ToString() ?? "", StringComparison.OrdinalIgnoreCase))
+                    suggestions.Add(new AutocompleteResult(type, type));
             }
             await Task.Delay(0);
             return AutocompletionResult.FromSuccess(suggestions.Take(25));
