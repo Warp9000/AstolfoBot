@@ -59,25 +59,11 @@ namespace AstolfoBot.Modules.Logs
                 GuildConfig cfg = guildChannel.Guild.GetConfig();
                 if (messages.Count > 0)
                 {
-                    List<IUser> authors = new();
-                    foreach (var message in messages)
-                    {
-                        if (message.HasValue)
-                        {
-                            if (authors.Contains(message.Value.Author))
-                            {
-                                continue;
-                            }
-                            authors.Add(message.Value.Author);
-                        }
-                    }
-                    bool multipleAuthors = authors.Count > 1;
-
                     string messageContent = "yyyy-MM-dd HH:mm:ss | Author: Content\n--------------------------------------------------\n";
                     var msgs = messages.ToList();
                     msgs.RemoveAll(x => !x.HasValue);
                     msgs.Sort((x, y) => x.Value.Timestamp.CompareTo(y.Value.Timestamp));
-                    if (!msgs.Any(x => string.IsNullOrEmpty(x.Value.Content)))
+                    if (!msgs.Any(x => !string.IsNullOrEmpty(x.Value.Content)))
                     {
                         return;
                     }
