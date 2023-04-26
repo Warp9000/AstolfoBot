@@ -13,5 +13,7 @@ namespace AstolfoBot.Config
         public ITextChannel? InviteLogChannel { get; set; }
 
         public AstolfoBot.Modules.Counting.CountingConfig Counting { get; set; } = new();
+
+        public AstolfoBot.Modules.Moderation.WarnData WarnData { get; set; } = new();
     }
 }
