@@ -8,6 +8,7 @@ namespace AstolfoBot
     {
         static Main()
         {
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             var ClientConfig = new DiscordSocketConfig
             {
 #if DEBUG
@@ -89,6 +90,12 @@ namespace AstolfoBot
             await Client.LogoutAsync();
             Config.ConfigManager.SaveToFile();
             Logger.Debug("Saved Configs", "Main");
+        }
+        static void OnProcessExit(object? sender, EventArgs e)
+        {
+            Logger.Warning("Detected process exit from " + sender?.GetType().FullName, "Main");
+            StopAsync().Wait();
+            Logger.Debug("-----END-----", "Main");
         }
     }
 }
