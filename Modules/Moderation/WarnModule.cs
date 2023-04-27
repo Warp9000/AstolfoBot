@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 using AstolfoBot.Config;
+using AstolfoBot.Completers;
 
 namespace AstolfoBot.Modules.Moderation
 {
@@ -31,7 +32,7 @@ namespace AstolfoBot.Modules.Moderation
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithAuthor(Context.User)
-                .WithDescription($"Warned {user.Mention} for {reason ?? "no reason"}")
+                .WithDescription($"Warned {user.Mention}\nReason: {reason ?? "No reason provided"}")
                 .WithFooter($"Warn ID: {warn.Id}")
                 .WithTimestamp(warn.Timestamp)
                 .Build();
@@ -39,7 +40,7 @@ namespace AstolfoBot.Modules.Moderation
             await RespondAsync(embed: embed);
         }
 
-        [SlashCommand("warns", "Shows a user's warns")]
+        [SlashCommand("listwarns", "Shows a user's warns")]
         [RequireUserPermission(GuildPermission.ManageMessages)]
         public async Task WarnsAsync([Summary("user", "The user to show warns for")] SocketUser user, [Summary("page", "The page of warns to show")] int page = 1)
         {
@@ -52,7 +53,6 @@ namespace AstolfoBot.Modules.Moderation
             {
                 var eb = new EmbedBuilder()
                     .WithColor(Color.Red)
-                    .WithAuthor(Context.User)
                     .WithDescription($"No warns for {user.Mention}")
                     .WithTimestamp(DateTime.UtcNow)
                     .Build();
@@ -62,7 +62,6 @@ namespace AstolfoBot.Modules.Moderation
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithAuthor(Context.User)
                 .WithDescription($"Warns for {user.Mention}")
                 .WithFooter($"Warns: {warns.Count}")
                 .WithTimestamp(DateTime.UtcNow);
@@ -81,20 +80,52 @@ namespace AstolfoBot.Modules.Moderation
             await RespondAsync(embed: embed.Build());
         }
 
-        [SlashCommand("deletewarn", "Deletes a warn")]
+        [SlashCommand("getwarn", "Gets a warn")]
         [RequireUserPermission(GuildPermission.ManageGuild)]
-        public async Task DeleteWarnAsync([Summary("warnid", "The ID of the warn to delete")] Guid warnId) // TODO: FIx this
+        public async Task GetWarnAsync([Autocomplete(typeof(WarnAutocompleteHandler))][Summary("warnid", "The ID of the warn")] string warnId)
         {
             var config = Context.Guild.GetConfig();
             var warnData = config.WarnData;
 
-            var warn = warnData.Warns.FirstOrDefault(w => w.Id == warnId);
+            var guid = Guid.Parse(warnId);
+
+            var warn = warnData.Warns.FirstOrDefault(w => w.Id == guid);
 
             if (warn == null)
             {
                 var eb = new EmbedBuilder()
                     .WithColor(Color.Red)
-                    .WithAuthor(Context.User)
+                    .WithDescription($"No warn with ID {warnId}")
+                    .WithTimestamp(DateTime.UtcNow)
+                    .Build();
+                await RespondAsync(embed: eb);
+                return;
+            }
+
+            var embed = new EmbedBuilder()
+                .WithColor(Color.Red)
+                .WithDescription($"User: <@{warn.UserId}>\nReason: {warn.Reason ?? "no reason"}\nModerator: <@{warn.Moderator}>\nTimestamp: {warn.Timestamp}")
+                .WithFooter($"Warn ID: {warn.Id}")
+                .WithTimestamp(DateTime.UtcNow)
+                .Build();
+
+            await RespondAsync(embed: embed);
+        }
+        [SlashCommand("deletewarn", "Deletes a warn")]
+        [RequireUserPermission(GuildPermission.ManageGuild)]
+        public async Task DeleteWarnAsync([Autocomplete(typeof(WarnAutocompleteHandler))][Summary("warnid", "The ID of the warn to delete")] string warnId)
+        {
+            var config = Context.Guild.GetConfig();
+            var warnData = config.WarnData;
+
+            var guid = Guid.Parse(warnId);
+
+            var warn = warnData.Warns.FirstOrDefault(w => w.Id == guid);
+
+            if (warn == null)
+            {
+                var eb = new EmbedBuilder()
+                    .WithColor(Color.Red)
                     .WithDescription($"No warn with ID {warnId}")
                     .WithTimestamp(DateTime.UtcNow)
                     .Build();
@@ -108,7 +139,6 @@ namespace AstolfoBot.Modules.Moderation
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithAuthor(Context.User)
                 .WithDescription($"Deleted warn with ID {warnId}")
                 .WithTimestamp(DateTime.UtcNow)
                 .Build();

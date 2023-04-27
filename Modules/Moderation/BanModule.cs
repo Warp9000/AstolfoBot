@@ -53,7 +53,7 @@ namespace AstolfoBot.Modules.Moderation
         [RequireBotPermission(GuildPermission.BanMembers)]
         public async Task
         UnbanUserAsync(
-            [Autocomplete(typeof(Completers.BannedUserAutocomplete))][Summary("user", "The user to unban")] ulong user,
+            [Autocomplete(typeof(Completers.BannedUserAutocompleteHandler))][Summary("user", "The user to unban")] ulong user,
             [Summary("reason", "The reason for the unban")]
             string reason = "No reason provided"
         )

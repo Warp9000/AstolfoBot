@@ -5,7 +5,7 @@ using AstolfoBot.Config;
 
 namespace AstolfoBot.Completers
 {
-    public class BannedUserAutocomplete : AutocompleteHandler
+    public class BannedUserAutocompleteHandler : AutocompleteHandler
     {
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services)
         {
