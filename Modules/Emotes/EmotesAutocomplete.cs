@@ -12,6 +12,8 @@ namespace AstolfoBot.Modules.Emotes
         private readonly string[] types;
         public EmotesAutocomplete()
         {
+            if (!Directory.Exists("images"))
+                Directory.CreateDirectory("images");
             types = Directory.GetDirectories("images").Select(x => Path.GetFileName(x)).ToArray();
         }
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services)
