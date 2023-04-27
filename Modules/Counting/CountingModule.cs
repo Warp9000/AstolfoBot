@@ -13,6 +13,7 @@ namespace AstolfoBot.Modules.Counting
         CountingModule()
         {
             Main.Client.MessageReceived += OnMessageReceived;
+            Main.Client.MessageDeleted += OnMessageDeleted;
         }
 
         private async Task OnMessageReceived(SocketMessage message)
@@ -38,7 +39,7 @@ namespace AstolfoBot.Modules.Counting
                     return;
                 }
 
-                if (!message.Content.StartsWith((config.Counting.CurrentNumber + 1).ToString()))
+                if (!message.Content.Contains((config.Counting.CurrentNumber + 1).ToString()))
                 {
                     await message.DeleteAsync();
                     return;
@@ -47,6 +48,37 @@ namespace AstolfoBot.Modules.Counting
                 config.Counting.CurrentNumber++;
                 config.Counting.LastUser = (IGuildUser)message.Author;
                 config.SaveConfig(((ITextChannel)message.Channel).Guild);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e.Message, this, e);
+            }
+        }
+        private async Task OnMessageDeleted(Cacheable<IMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
+        {
+            try
+            {
+                if (channel.Value is not ITextChannel textChannel)
+                    return;
+
+                var config = textChannel.Guild.GetConfig();
+                if (config.Counting.CountingChannel == null)
+                    return;
+
+                if (config.Counting.CountingChannel.Id != textChannel.Id)
+                    return;
+
+                if (message.Value.Author.IsBot)
+                    return;
+
+                if (config.Counting.LastUser == null)
+                    return;
+
+                if (config.Counting.LastUser.Id == message.Value.Author.Id)
+                {
+                    var chnl = channel.Value as ITextChannel;
+                    await chnl!.SendMessageAsync($"{message.Value.Author.Mention} deleted their message. The next number is {config.Counting.CurrentNumber + 1}");
+                }
             }
             catch (Exception e)
             {
