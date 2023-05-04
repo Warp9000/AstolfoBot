@@ -1,7 +1,5 @@
 ## Todo:
 
-    ❌ Auto mod
-
     ➖ Embeds
         ✔️ Command to embed
         ✔️ Send embed to other channel
@@ -27,13 +25,8 @@
         ✔️ Kick
         ✔️ Ban
         ✔️ Mute
-        ❌ Purge
-        ❌ Lockdown
+        ✔️ Purge
 
-    ❌ Reaction roles
-
-    ❌ Counting
-
-    ➖ Tickets
+    ✔️ Counting
 
 <!-- ❌➖✔️ -->
