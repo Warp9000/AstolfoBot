@@ -67,21 +67,5 @@ namespace AstolfoBot.Modules.Fun
                 .Build();
             await RespondAsync(embed: embed);
         }
-
-        [SlashCommand("ppsize", "Shlong")]
-        public async Task PPSize(IUser? user = null)
-        {
-            user ??= Context.User;
-            var hash = Math.Abs(Hash(user.Id + "131"));
-            var horniness = hash % 1001 / 10f;
-            var embed = new EmbedBuilder()
-                .WithColor(Color.Purple)
-                .WithTitle($"{user.Username}'s pp is {horniness}cm long")
-                .WithDescription("8" + new string('=', (int)horniness / 2) + "D")
-                .WithCurrentTimestamp()
-                .WithFooter("These values are not accurate and are just for fun")
-                .Build();
-            await RespondAsync(embed: embed);
-        }
     }
 }
