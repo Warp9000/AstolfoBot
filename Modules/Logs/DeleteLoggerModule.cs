@@ -23,6 +23,11 @@ namespace AstolfoBot.Modules.Logs
                     GuildConfig cfg = guildChannel.Guild.GetConfig();
                     if (message.HasValue)
                     {
+                        if (message.Value.Author.IsBot)
+                        {
+                            Logger.Debug("Message is from a bot", this);
+                            return;
+                        }
                         if (cfg.LogChannel is not null)
                         {
                             var embed = new EmbedBuilder()
@@ -61,7 +66,7 @@ namespace AstolfoBot.Modules.Logs
                 {
                     string messageContent = "yyyy-MM-dd HH:mm:ss | Author: Content\n--------------------------------------------------\n";
                     var msgs = messages.ToList();
-                    msgs.RemoveAll(x => !x.HasValue);
+                    msgs.RemoveAll(x => !x.HasValue || x.Value.Author.IsBot);
                     msgs.Sort((x, y) => x.Value.Timestamp.CompareTo(y.Value.Timestamp));
                     if (!msgs.Any(x => !string.IsNullOrEmpty(x.Value.Content)))
                     {

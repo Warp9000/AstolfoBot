@@ -104,7 +104,15 @@ namespace AstolfoBot.Modules.Development
                 {
                     o = string.Join("\n", (string[])o);
                 }
-                await RespondAsync(o?.ToString() ?? "Command executed", ephemeral: true);
+                string oStr = o?.ToString() ?? "Command executed";
+                if (oStr.Length < 2000)
+                {
+                    await RespondAsync(oStr, ephemeral: true);
+                    return;
+                }
+                // respond with file
+                var file = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(oStr));
+                await RespondWithFileAsync(file, "output.txt", ephemeral: true);
             }
             catch (Exception e)
             {
@@ -193,6 +201,33 @@ namespace AstolfoBot.Modules.Development
                 list.Add($"{user.Username}#{user.Discriminator} ({user.Id}) in {user.Guild.Name} ({user.Guild.Id})");
             }
             return list.ToArray();
+        }
+        [DevCommand(new[] { "ListR", "LR" })]
+        public string[] ListRoles(ulong guildId)
+        {
+            var guild = Context.Client.GetGuild(guildId);
+            var list = new List<string>();
+            foreach (var role in guild.Roles)
+            {
+                list.Add($"{role.Name} ({role.Id})");
+            }
+            return list.ToArray();
+        }
+        [DevCommand(new[] { "GiveR", "GR" })]
+        public async Task<string> GiveRole(ulong guildId, ulong userId, ulong roleId)
+        {
+            var guild = Context.Client.GetGuild(guildId);
+            var user = guild.GetUser(userId);
+            var role = guild.GetRole(roleId);
+            await user.AddRoleAsync(role);
+            return "Done";
+        }
+        [DevCommand(new[] { "UB" })]
+        public async Task<string> Unban(ulong guildId, ulong userId)
+        {
+            var guild = Context.Client.GetGuild(guildId);
+            await guild.RemoveBanAsync(userId);
+            return "Done";
         }
     }
 

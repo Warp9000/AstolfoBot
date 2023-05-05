@@ -29,11 +29,11 @@ namespace AstolfoBot.Modules.Logs
                 timeRange ??= (DateTime.Now.AddDays(-1), DateTime.Now);
                 var (start, end) = timeRange.Value;
                 msgs = msgs.Where(m => m.Timestamp >= start && m.Timestamp <= end).ToList();
-                messages.AddRange (msgs);
+                messages.AddRange(msgs);
             }
             return messages;
         }
-        public static List<(JsonMessage,JsonMessage)> GetEditedMessages(
+        public static List<(JsonMessage, JsonMessage)> GetEditedMessages(
             ulong guildId,
             ulong channelId,
             (DateTime, DateTime)? timeRange = null
@@ -47,15 +47,15 @@ namespace AstolfoBot.Modules.Logs
                 Directory.CreateDirectory(path);
             }
             var files = Directory.GetFiles(path, "e????-??-??.json");
-            var messages = new List<(JsonMessage,JsonMessage)>();
+            var messages = new List<(JsonMessage, JsonMessage)>();
             foreach (var file in files)
             {
                 var json = File.ReadAllText(file);
-                var msgs = JsonConvert.DeserializeObject<List<(JsonMessage,JsonMessage)>>(json) ?? new List<(JsonMessage,JsonMessage)>();
+                var msgs = JsonConvert.DeserializeObject<List<(JsonMessage, JsonMessage)>>(json) ?? new List<(JsonMessage, JsonMessage)>();
                 timeRange ??= (DateTime.Now.AddDays(-1), DateTime.Now);
                 var (start, end) = timeRange.Value;
                 msgs = msgs.Where(m => m.Item1.EditedTimestamp >= start && m.Item1.EditedTimestamp <= end).ToList();
-                messages.AddRange (msgs);
+                messages.AddRange(msgs);
             }
             return messages;
         }
@@ -88,7 +88,7 @@ namespace AstolfoBot.Modules.Logs
         public static void WriteEditedMessages(
             ulong guildId,
             ulong channelId,
-            List<(JsonMessage,JsonMessage)> messages
+            List<(JsonMessage, JsonMessage)> messages
         )
         {
             var path = $"Data/Guilds/{guildId}/{channelId}/";
@@ -103,7 +103,7 @@ namespace AstolfoBot.Modules.Logs
                 {
                     File.Create(file).Close();
                 }
-                List<(JsonMessage,JsonMessage)> msgs = JsonConvert.DeserializeObject<List<(JsonMessage,JsonMessage)>>(File.ReadAllText(file)) ?? new List<(JsonMessage,JsonMessage)>();
+                List<(JsonMessage, JsonMessage)> msgs = JsonConvert.DeserializeObject<List<(JsonMessage, JsonMessage)>>(File.ReadAllText(file)) ?? new List<(JsonMessage, JsonMessage)>();
                 msgs.Add(message);
                 var json = JsonConvert.SerializeObject(msgs);
                 File.WriteAllText(file, json);

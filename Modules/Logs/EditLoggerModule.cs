@@ -29,6 +29,11 @@ namespace AstolfoBot.Modules.Logs
                 Logger.Debug("LogChannel is null", this);
                 return Task.CompletedTask;
             }
+            if (newMessage.Author.IsBot)
+            {
+                Logger.Debug("Message is from a bot", this);
+                return Task.CompletedTask;
+            }
             if (message.HasValue && message.Value.Content != newMessage.Content)
             {
                 var embed = new EmbedBuilder()
