@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -36,6 +37,7 @@ namespace AstolfoBot.Modules.Other
                 .WithColor(new Color(0xE26D8F));
             await FollowupAsync(embed: embed.Build());
         }
+
         [SlashCommand("banner", "Gets the banner of a user")]
         public async Task BannerAsync([Summary("user", "The user to get the banner of")] IUser? user = null)
         {
@@ -73,8 +75,35 @@ namespace AstolfoBot.Modules.Other
             embed.WithDescription($"Humans: {humans}\nBots: {bots}\nTotal: {users.Count}");
             await RespondAsync(embed: embed.Build());
         }
-        [SlashCommand("help", "Shows help for the bot")]
 
+        [SlashCommand("info", "Gets info about the bot")]
+        public async Task InfoAsync()
+        {
+            var uptime = DateTime.Now - Process.GetCurrentProcess().StartTime;
+            var embed = new EmbedBuilder()
+                .WithTitle("Info")
+                .WithColor(new Color(0xE26D8F))
+                .WithDescription(
+                    "[AstolfoBot](https://github.com/WarpABoi/AstolfoBot) is a general purpose bot made by [Warp](https://github.com/WarpABoi) as a hobby project. " +
+                    "It is written in C# using [Discord.Net](https://discordnet.dev/) " +
+                    "and is  being actively developed.\n" +
+                    "If you have any suggestions or issues, feel free to tell me in the [support server](https://discord.gg/sh6Zvrq4ch) or open an issue on github.")
+                .AddField("Version", typeof(Main).Assembly.GetName().Version?.ToString() ?? "Unknown", true)
+                .AddField("Uptime",
+                    $"{(uptime.Days > 0 ? $"{uptime.Days}d " : "")}" +
+                    $"{(uptime.Hours > 0 ? $"{uptime.Hours}h " : "")}" +
+                    $"{(uptime.Minutes > 0 ? $"{uptime.Minutes}m " : "")}" +
+                    $"{uptime.Seconds}s",
+                true)
+                .AddField("Guilds", Context.Client.Guilds.Count, true)
+                .AddField("Users", Context.Client.Guilds.Sum(x => x.MemberCount), true)
+                .AddField("Ping", $"{Context.Client.Latency}ms", true)
+                .AddField("Memory", $"{Process.GetCurrentProcess().WorkingSet64 / 1024 / 1024}MB", true);
+
+            await RespondAsync(embed: embed.Build());
+        }
+
+        [SlashCommand("help", "Shows help for the bot")]
         public async Task HelpAsync([Summary("command", "The command to get help for"), Autocomplete(typeof(AstolfoBot.Completers.CommandAutocompleteHandler))] string? command = null)
         {
             var embed = new EmbedBuilder()
@@ -107,6 +136,7 @@ namespace AstolfoBot.Modules.Other
             }
             await RespondAsync(embed: embed.Build());
         }
+
         private SlashCommandInfo[] GetCommands(ModuleInfo module)
         {
             List<SlashCommandInfo> commands = new();
